@@ -1,0 +1,200 @@
+// Variables and arithmetic
+var a = 10;
+var b = 5;
+print a + b;       // 15
+print a - b;       // 5
+print a * b;       // 50
+print a / b;       // 2
+
+// Boolean logic
+var x = true;
+var y = false;
+print x and y;      // false
+print x or y;       // true
+print !x;           // false
+print "hi" or 2;    // "hi".
+print nil or "yes"; // "yes".
+
+
+// Comparison
+print a > b;       // true
+print a < b;       // false
+print a == 10;     // true
+print a != b;      // true
+
+// If/else
+if (a > b) {
+  print "a is bigger";
+} else {
+  print "b is bigger";
+}
+
+// Native clock function
+print clock;        // prints <native fn>
+print clock();      // prints current time in seconds
+
+//Shadowing
+
+var a = "global a";
+var b = "global b";
+var c = "global c";
+{
+  var a = "outer a";
+  var b = "outer b";
+  {
+    var a = "inner a";
+    print a; // inner a
+    print b; // outer b
+    print c; // global c
+  }
+  print a; // outer a
+  print b; // outer b
+  print c; // global c
+}
+print a; // global a
+print b; // global b
+print c; // global c
+
+// Loops
+for (var i = 0; i < 10; i = i + 1) {
+	print i;
+} //prints values 0 - 9
+
+var counter = 0;
+while (counter < 3) {
+  print counter;
+  counter = counter + 1;
+} //prints values 0 - 2
+
+var a = 0;
+var temp;
+for (var b = 1; a < 10000; b = temp + b) {
+  print a;
+  temp = a;
+  a = b;
+} //prints values of the fibonacci sequence under 10000
+
+//Functions
+fun sayHi(first, last) {
+  print "Hi, " + first + " " + last + "!";
+}
+
+sayHi("Dear", "Reader"); // prints "Hi, Dear Reader!"
+
+
+fun fib(n) {
+  if (n <= 1) return n;
+  return fib(n - 2) + fib(n - 1);
+}
+
+for (var i = 0; i < 20; i = i + 1) {
+  print fib(i);
+} //prints the first 20 values of the fibonacci sequence
+
+
+fun makeCounter() {
+  var i = 0;
+  fun count() {
+    i = i + 1;
+    print i;
+  }
+
+  return count;
+}
+
+var counter = makeCounter();
+counter(); // "1".
+counter(); // "2".
+
+//scoping in functions
+var a = "global";
+{
+  fun showA() {
+    print a;
+  }
+
+  showA();
+  var a = "block";
+  showA();
+} //prints global global
+
+//Classes
+class DevonshireCream {
+  serveOn() {
+    return "Scones";
+  }
+}
+
+print DevonshireCream; // Prints "DevonshireCream".
+
+class Bagel {}
+var bagel = Bagel();
+print bagel; // Prints "Bagel instance".
+
+class Bacon {
+  eat() {
+    print "Crunch crunch crunch!";
+  }
+}
+
+Bacon().eat(); // Prints "Crunch crunch crunch!".
+
+
+class Cake {
+  taste() {
+    var adjective = "delicious";
+    print "The " + this.flavor + " cake is " + adjective + "!";
+  }
+}
+
+var cake = Cake();
+cake.flavor = "German chocolate";
+cake.taste(); // Prints "The German chocolate cake is delicious!".
+
+class Foo {
+  init(a, b) {
+    this.x = a;
+    this.y = b;
+  }
+
+  printXY() {
+    print this.x;
+    print this.y;
+  }
+}
+
+var f = Foo(10, 20);
+f.printXY();  // prints 10 and 20
+
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }
+}
+class BostonCream < Doughnut {}
+
+BostonCream().cook(); // Prints "Fry until golden brown.".
+
+class Doughnut {
+  cook() {
+    print "Fry until golden brown.";
+  }}
+class BostonCream < Doughnut {
+  cook() {
+    super.cook();
+    print "Pipe full of custard and coat with chocolate.";
+  }} 
+BostonCream().cook(); // Prints “Fry until golden brown. Pipe full of custard and coat with chocolate.”.
+
+
+class Box {
+  init(w, h) {
+    this.width = w;
+    this.height = h;
+  }
+  area() {
+    return this.width * this.height;
+  }
+}
+var myBox = Box(3, 4);
+print myBox.area(); //prints 12
