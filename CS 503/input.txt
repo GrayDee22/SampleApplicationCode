@@ -1,0 +1,212 @@
+```
+; ==============================
+; Parsing & basic atoms
+; ==============================
+
+14                          ; => 14
+14.5                        ; => 14.5
+"Hello"                     ; => "Hello"
+"Hello World"               ; => "Hello World"
+14Hello                     ; => error (invalid token)
+()                          ; => nil
+(a b c)                     ; => (a b c)
+(a         b           c)   ; => (a b c)
+;(a (b ) c)))))              ; => parse error (too many ')')
+(a (b c) d)                 ; => (a (b c) d)
+(x . y)                     ; => (x . y)
+(a b (c d) e)               ; => (a b (c d) e)
+(a (b (c (d e))))           ; => (a (b (c (d e))))
+(1 2 3 4 5)                 ; => (1 2 3 4 5)
+(a "b" 3)                   ; => (a "b" 3)
+((a b) (c d) (e f))         ; => ((a b) (c d) (e f))
+(a . (b . (c . nil)))       ; => (a b c)
+(a . (b . c))               ; => (a b . c)
+(a (b . c) d)               ; => (a (b . c) d)
+(a (b (c (d (e (f))))))     ; => (a (b (c (d (e (f))))))
+(1 . 2)                     ; => (1 . 2)
+(a . ())                    ; => (a)
+("str1" "str2" "str3")      ; => ("str1" "str2" "str3")
+(a (b c) (d (e f) g) h)     ; => (a (b c) (d (e f) g) h)
+(a . (b . (c . (d . nil)))) ; => (a b c d)
+'a                          ; => a
+'(a)                        ; => (a)
+'(a b)                      ; => (a b)
+'(a (b c))                  ; => (a (b c))
+(() () ())                  ; => (nil nil nil)
+(() '() a 'b . c)           ; => (nil nil a b . c)
+(a . (b . (c . d)))         ; => (a b c . d)
+
+; ==============================
+; Arithmetic
+; ==============================
+
+(add 1 2)                   ; => 3
+(add 10 20)                 ; => 30
+(add -5 5)                  ; => 0
+(add 2.5 3.5)               ; => 6.0
+(sub 5 2)                   ; => 3
+(sub 2 5)                   ; => -3
+(sub 10.5 4.5)              ; => 6.0
+(mul 3 4)                   ; => 12
+(mul -3 3)                  ; => -9
+(mul 2.5 2)                 ; => 5.0
+(div 10 2)                  ; => 5
+(div 7 2)                   ; => 3
+(div 10 0)                  ; => error (division by zero)
+(mod 10 0)                  ; => error (mod by zero)
+(gt 5 3)                    ; => t
+(gt 3 5)                    ; => nil
+(gt 5 5)                    ; => nil
+(lt 2 7)                    ; => t
+(lt 7 2)                    ; => nil
+(lt 5 5)                    ; => nil
+(not 1)                     ; => nil
+(not 0)                     ; => t
+(not ())                    ; => t
+(not "foo")                 ; => nil
+(not (list? ()))            ; => nil
+
+; ==============================
+; Type predicates
+; ==============================
+
+(nil? ())                   ; => t
+(nil? nil)                  ; => t
+(nil? 0)                    ; => nil
+(symbol? foo)               ; => t
+(symbol? "bar")             ; => nil
+(number? 42)                ; => t
+(number? 3.14)              ; => t
+(number? foo)               ; => nil
+(string? "Hello")           ; => t
+(string? foo)               ; => nil
+(list? ())                  ; => t
+(list? (a b c))             ; => t
+(list? 42)                  ; => nil
+
+; ==============================
+; CONS, CAR, CDR
+; ==============================
+
+(cons 'a 'b)                ; => (a . b)
+(cons 'a '())               ; => (a)
+(cons 'a '(b c))            ; => (a b c)
+(car (cons 'a 'b))          ; => a
+(cdr (cons 'a 'b))          ; => b
+(car '(a b c))              ; => a
+(cdr '(a b c))              ; => (b c)
+(cons 'a (cons 'b 'c))      ; => (a b . c)
+(cons 'a (cons 'b '()))     ; => (a b)
+(cons 'a (cons 'b (cons 'c '()))) ; => (a b c)
+(list? (cons 'a (cons 'b 'c))) ; => nil
+(car ())                    ; => nil (or error depending on implementation)
+(cdr ())                    ; => nil (or error depending on implementation)
+(cons 42 "Hello")           ; => (42 . "Hello")
+
+; ==============================
+; Logical operators
+; ==============================
+
+(and t t)                   ; => t
+(and nil t)                 ; => nil
+(and t nil)                 ; => nil
+(and nil nil)               ; => nil
+
+(and (or nil t) t)          ; => t
+(and (or nil nil) t)        ; => nil
+
+(or t t)                    ; => t
+(or nil t)                  ; => t
+(or t nil)                  ; => t
+(or nil nil)                ; => nil
+
+(or (and t t) nil)          ; => t
+(or (and t nil) nil)        ; => nil
+
+; ==============================
+; IF
+; ==============================
+
+(if t 1 2)                  ; => 1
+(if nil 1 2)                ; => 2
+(if t 1)                    ; => 1
+(if nil 1)                  ; => nil
+(if (and t nil) 1 2)        ; => 2
+(if (or t nil) 1 2)         ; => 1
+
+; ==============================
+; COND
+; ==============================
+
+(cond ((nil 1) ('t 2)))              ; => 2
+(cond (('t 3) ('t 4)))               ; => 3
+(cond ((nil 1) (nil 2) ('t 5)))      ; => 5
+(cond ((nil 1) (nil 2)))             ; => nil
+(cond ((and nil t) 1) ((or nil t) 2) ('t 0)) ; => 2
+(cond ((and nil nil) 1) ((or nil nil) 2) ('t 3)) ; => 3
+
+(and)                         ; => nil (invalid)
+(or)                          ; => nil (invalid)
+(if)                          ; => nil (invalid)
+(cond)                        ; => nil (invalid)
+
+; ==============================
+; User-defined recursive functions
+; ==============================
+
+(define factorial (n)
+    (if (lte n 1)
+        1
+        (mul n (factorial (sub n 1)))))  ; define factorial
+
+(factorial 5)                ; => 120
+
+(define fibonacci (n)
+    (if (lte n 1)
+        n
+        (add (fibonacci (sub n 1))
+             (fibonacci (sub n 2)))))    ; define fibonacci
+
+(fibonacci 6)                 ; => 8
+
+(define (max a b)
+    (if (gt a b) a b))        ; define max
+
+(max 10 20)                   ; => 20
+(max 30 15)                   ; => 30
+
+(define abs (x)
+    (if (lt x 0)
+        (mul x -1)
+        x))                   ; define abs
+
+(abs -7)                      ; => 7
+(abs 5)                       ; => 5
+
+(define sum-list (lst)
+    (if (nil? lst)
+        0
+        (add (car lst) (sum-list (cdr lst))))) ; define sum-list
+
+(sum-list (cons 1 (cons 2 (cons 3 nil)))) ; => 6
+(sum-list ())                  ; => 0
+
+; ==============================
+; Lambda expressions
+; ==============================
+
+((lambda (x) (+ x 1)) 5)      ; => 6
+((lambda (x y) (* x y)) 3 4)  ; => 12
+
+(define square (lambda (x) (* x x)))
+(square 5)                    ; => 25
+
+(define addTwo (lambda (a b) (+ a b)))
+(addTwo 10 15)                ; => 25
+
+(define applyTwice (lambda (f x) (f (f x))))
+(applyTwice (lambda (y) (+ y 2)) 5) ; => 9
+
+(define makeAdder (lambda (n) (lambda (x) (+ x n))))
+((makeAdder 10) 5)            ; => 15
+```

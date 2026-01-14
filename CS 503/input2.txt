@@ -1,0 +1,32 @@
+(define atom? (x)
+  (or (number? x) (symbol? x))
+)
+
+(define infix (sexp)
+  (cond
+    ((nil? sexp) sexp)      ; empty list returns itself
+    ((atom? sexp) sexp)     ; numbers and symbols return themselves
+    ('t (makeInfix (car sexp) (cadr sexp) (caddr sexp)))
+  )
+)
+
+(define makeInfix (operator left right)
+  (cons
+    (infix left)            ; left operand
+    (cons
+      operator              ; operator symbol
+      (cons
+        (infix right)       ; right operand
+        nil)
+    )
+  )
+)
+
+
+(infix 1)
+
+(infix '(+ 2 3))
+
+(infix '(== (* 4 5) (+ 8 1)))
+
+(infix '(!= 1 (/ (* 4 5) (+ 8 1))))

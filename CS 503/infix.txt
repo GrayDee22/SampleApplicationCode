@@ -1,0 +1,24 @@
+;helper function I don't have in my lisp function
+(define atom? (x)                                 
+    (or (number? x) (symbol? x))
+) 
+
+(define infix (sexp) (cond
+    ((nil? sexp) sexp)                                      ;checks if sexp is nil
+    ((atom? sexp) sexp)                                     ;if the sexp is evaluated it will return that value
+    ('t (makeInfix (car sexp) (cadr sexp) (caddr sexp)))    ;otherwise calls makeInfix
+))
+
+
+(define makeInfix (operator left right)
+    (cons
+        (infix left)                        ;left
+        (cons
+            operator                        ;operator symbol
+            (cons
+                (infix right)               ;right
+                nil                         ;nil for the cons
+            )
+        )
+    )
+)
